@@ -35,6 +35,12 @@ pub async fn execute(
         AccessCodeCommands::UpdateMultiple { updates_json } => {
             update_multiple(client, updates_json, id_only, raw).await
         }
+        AccessCodeCommands::GetTimeline { access_code_id } => {
+            get_timeline(client, access_code_id, id_only, raw).await
+        }
+        AccessCodeCommands::PullBackupAccessCode { access_code_id: _ } => {
+            todo!("pull_backup_access_code - will be implemented in 5.2")
+        }
     }
 }
 
@@ -198,6 +204,21 @@ async fn update_multiple(
     });
 
     let response = client.post("/access_codes/update_multiple", params).await?;
+    print_output(&response, id_only, raw);
+    Ok(())
+}
+
+async fn get_timeline(
+    client: &SeamClient,
+    access_code_id: String,
+    id_only: bool,
+    raw: bool,
+) -> SeamResult<()> {
+    let params = json!({
+        "access_code_id": access_code_id,
+    });
+
+    let response = client.post("/access_codes/get_timeline", params).await?;
     print_output(&response, id_only, raw);
     Ok(())
 }

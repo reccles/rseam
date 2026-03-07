@@ -170,6 +170,18 @@ pub enum AccessCodeCommands {
         #[arg(long)]
         updates_json: String,
     },
+
+    /// Get timeline of access code changes
+    GetTimeline {
+        #[arg(long)]
+        access_code_id: String,
+    },
+
+    /// Pull backup access code from provider
+    PullBackupAccessCode {
+        #[arg(long)]
+        access_code_id: String,
+    },
 }
 
 #[derive(Subcommand, Debug, PartialEq)]

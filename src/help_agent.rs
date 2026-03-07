@@ -488,6 +488,32 @@ rseam access-codes update-multiple \
 
 ---
 
+### access-codes get-timeline
+Get the change history for an access code.
+
+**Purpose:** View when an access code was created, modified, or used.
+
+**Parameters:**
+- `--access-code-id` (required): The access code to get history for
+
+**Output:** Timeline of events for the access code
+
+**Examples:**
+```bash
+# Get timeline for a code
+rseam access-codes get-timeline --access-code-id "ac_123"
+
+# Get raw JSON for parsing
+rseam access-codes get-timeline --access-code-id "ac_123" --raw
+```
+
+**Use Cases:**
+- Audit access code changes
+- Debug code sync issues
+- Track when codes were used
+
+---
+
 ## Health Commands
 
 ### health get-health
