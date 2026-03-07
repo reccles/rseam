@@ -153,6 +153,23 @@ pub enum AccessCodeCommands {
         #[arg(long)]
         name: Option<String>,
     },
+
+    /// Create multiple access codes at once
+    CreateMultiple {
+        #[arg(long)]
+        device_id: String,
+
+        /// JSON array of codes, e.g. '[{"code":"1234","name":"Guest"}]'
+        #[arg(long)]
+        codes_json: String,
+    },
+
+    /// Update multiple access codes at once
+    UpdateMultiple {
+        /// JSON array of updates, e.g. '[{"access_code_id":"ac_123","name":"New"}]'
+        #[arg(long)]
+        updates_json: String,
+    },
 }
 
 #[derive(Subcommand, Debug, PartialEq)]

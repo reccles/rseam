@@ -29,6 +29,12 @@ pub async fn execute(
         AccessCodeCommands::GenerateCode { device_id, name } => {
             generate_code(client, device_id, name, id_only, raw).await
         }
+        AccessCodeCommands::CreateMultiple { device_id, codes_json } => {
+            create_multiple(client, device_id, codes_json, id_only, raw).await
+        }
+        AccessCodeCommands::UpdateMultiple { updates_json: _ } => {
+            todo!("update_multiple - will be implemented in 4.2")
+        }
     }
 }
 
@@ -152,6 +158,27 @@ async fn generate_code(
     }
 
     let response = client.post("/access_codes/generate_code", params).await?;
+    print_output(&response, id_only, raw);
+    Ok(())
+}
+
+async fn create_multiple(
+    client: &SeamClient,
+    device_id: String,
+    codes_json: String,
+    id_only: bool,
+    raw: bool,
+) -> SeamResult<()> {
+    // Parse the JSON array of code specs
+    let codes: serde_json::Value = serde_json::from_str(&codes_json)
+        .map_err(|e| crate::error::SeamError::SerdeError(e))?;
+
+    let params = json!({
+        "device_id": device_id,
+        "access_codes": codes,
+    });
+
+    let response = client.post("/access_codes/create_multiple", params).await?;
     print_output(&response, id_only, raw);
     Ok(())
 }

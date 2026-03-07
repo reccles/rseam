@@ -429,6 +429,37 @@ echo "Generated code: $CODE"
 
 ---
 
+### access-codes create-multiple
+Create multiple access codes at once.
+
+**Purpose:** Batch create access codes for a device.
+
+**Parameters:**
+- `--device-id` (required): The lock to add codes to
+- `--codes-json` (required): JSON array of code specs
+
+**Output:** Array of created access code objects
+
+**Examples:**
+```bash
+# Create multiple guest codes
+rseam access-codes create-multiple \
+  --device-id "dev_123" \
+  --codes-json '[{"code":"1234","name":"Guest 1"},{"code":"5678","name":"Guest 2"}]'
+
+# Create codes from a file
+rseam access-codes create-multiple \
+  --device-id "dev_123" \
+  --codes-json "$(cat codes.json)"
+```
+
+**Use Cases:**
+- Bulk onboarding of access codes
+- Setting up multiple guest codes at once
+- Scripted provisioning
+
+---
+
 ## Health Commands
 
 ### health get-health
