@@ -17,6 +17,9 @@ pub async fn execute(
         DeviceCommands::Get { device_id, name } => {
             get_device(client, device_id, name, id_only, raw).await
         }
+        DeviceCommands::Update { device_id, name } => {
+            update_device(client, device_id, name, id_only, raw).await
+        }
     }
 }
 
@@ -62,6 +65,26 @@ async fn get_device(
     }
 
     let response = client.post("/devices/get", params).await?;
+    print_output(&response, id_only, raw);
+    Ok(())
+}
+
+async fn update_device(
+    client: &SeamClient,
+    device_id: String,
+    name: Option<String>,
+    id_only: bool,
+    raw: bool,
+) -> SeamResult<()> {
+    let mut params = json!({
+        "device_id": device_id,
+    });
+
+    if let Some(n) = name {
+        params["name"] = n.into();
+    }
+
+    let response = client.post("/devices/update", params).await?;
     print_output(&response, id_only, raw);
     Ok(())
 }

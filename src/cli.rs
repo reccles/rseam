@@ -78,6 +78,15 @@ pub enum DeviceCommands {
         #[arg(long)]
         name: Option<String>,
     },
+
+    /// Update a device
+    Update {
+        #[arg(long)]
+        device_id: String,
+
+        #[arg(long)]
+        name: Option<String>,
+    },
 }
 
 #[derive(Subcommand, Debug, PartialEq)]
@@ -238,6 +247,48 @@ mod tests {
                     DeviceCommands::Get {
                         device_id: None,
                         name: Some("Front Door".to_string())
+                    }
+                );
+            }
+            _ => panic!("Expected Devices command"),
+        }
+    }
+
+    #[test]
+    fn test_cli_parses_devices_update() {
+        let cli = Cli::parse_from([
+            "rseam",
+            "devices",
+            "update",
+            "--device-id",
+            "dev_123",
+            "--name",
+            "New Name",
+        ]);
+        match cli.command {
+            Some(Commands::Devices { command }) => {
+                assert_eq!(
+                    command,
+                    DeviceCommands::Update {
+                        device_id: "dev_123".to_string(),
+                        name: Some("New Name".to_string())
+                    }
+                );
+            }
+            _ => panic!("Expected Devices command"),
+        }
+    }
+
+    #[test]
+    fn test_cli_parses_devices_update_no_name() {
+        let cli = Cli::parse_from(["rseam", "devices", "update", "--device-id", "dev_123"]);
+        match cli.command {
+            Some(Commands::Devices { command }) => {
+                assert_eq!(
+                    command,
+                    DeviceCommands::Update {
+                        device_id: "dev_123".to_string(),
+                        name: None
                     }
                 );
             }
