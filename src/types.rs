@@ -3,6 +3,7 @@ use serde_json::Value;
 
 /// Generic API response wrapper
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[allow(dead_code)]
 pub struct ApiResponse {
     #[serde(flatten)]
     pub data: Value,
@@ -10,6 +11,7 @@ pub struct ApiResponse {
 
 /// Device type
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[allow(dead_code)]
 pub struct Device {
     pub device_id: String,
     #[serde(default)]
@@ -24,6 +26,7 @@ pub struct Device {
 
 /// Access Code type
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[allow(dead_code)]
 pub struct AccessCode {
     pub access_code_id: String,
     pub code: String,
@@ -35,6 +38,7 @@ pub struct AccessCode {
 
 /// Connect Webview type
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[allow(dead_code)]
 pub struct ConnectWebview {
     pub connect_webview_id: String,
     pub url: String,
@@ -44,6 +48,7 @@ pub struct ConnectWebview {
 
 /// Action Attempt type
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[allow(dead_code)]
 pub struct ActionAttempt {
     pub action_attempt_id: String,
     pub status: String,
@@ -55,6 +60,7 @@ pub struct ActionAttempt {
 
 /// List response wrapper
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[allow(dead_code)]
 pub struct ListResponse<T> {
     pub items: Vec<T>,
     #[serde(flatten)]

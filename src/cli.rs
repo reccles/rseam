@@ -20,6 +20,10 @@ pub struct Cli {
     /// Output raw JSON (default: pretty-printed)
     #[arg(long, global = true)]
     pub raw: bool,
+
+    /// Display comprehensive agent context (markdown) for AI integration
+    #[arg(long, global = true)]
+    pub help_agent: bool,
 }
 
 #[derive(Subcommand, Debug)]
@@ -180,6 +184,12 @@ mod tests {
     fn test_cli_parses_help() {
         // Verify the CLI can generate help without panicking
         let _ = Cli::command().render_help();
+    }
+
+    #[test]
+    fn test_cli_parses_help_agent() {
+        let cli = Cli::parse_from(["rseam", "--help-agent"]);
+        assert!(cli.help_agent);
     }
 
     #[test]

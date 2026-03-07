@@ -69,6 +69,16 @@ DEVICE_ID=$(rseam devices get --name "Front Door" --id-only)
 rseam locks unlock-door --device-id "$DEVICE_ID"
 ```
 
+## Agent Context
+
+For AI agents and programmatic learning of the CLI surface:
+
+```bash
+rseam --help-agent
+```
+
+Outputs comprehensive markdown documentation with all commands, parameters, examples, and use cases. Designed for agent consumption—one call gets everything needed to use rseam autonomously.
+
 ## Commands
 
 - `devices list` - List all devices
@@ -101,6 +111,7 @@ src/
   api_client.rs      - HTTP client
   error.rs           - Error types
   types.rs           - Data structures
+  help_agent.rs      - Agent-friendly CLI documentation
   commands/          - Command implementations
     mod.rs
     devices.rs
