@@ -37,9 +37,6 @@ rseam devices list --id-only
 
 # Raw JSON output
 rseam devices list --raw
-
-# Get ID of first result for piping
-DEVICE_ID=$(rseam devices list --id-only)
 ```
 
 **Use Cases:**
@@ -79,7 +76,116 @@ rseam devices get --device-id "dev_123" --id-only
 
 ---
 
+### devices update
+Update device properties.
+
+**Purpose:** Modify device attributes like name.
+
+**Parameters:**
+- `--device-id` (required): Device ID to update
+- `--name` (optional): New name for the device
+
+**Output:** Updated device object
+
+**Examples:**
+```bash
+# Rename a device
+rseam devices update --device-id "dev_123" --name "Back Door Lock"
+
+# Update without name (no-op, useful for refresh)
+rseam devices update --device-id "dev_123"
+```
+
+**Use Cases:**
+- Rename devices for clarity
+- Update device metadata
+- Batch rename in scripts
+
+---
+
+### devices delete
+Delete a device from the workspace.
+
+**Purpose:** Remove a device from Seam management.
+
+**Parameters:**
+- `--device-id` (required): Device ID to delete
+
+**Output:** Confirmation of deletion
+
+**Examples:**
+```bash
+# Delete a device
+rseam devices delete --device-id "dev_123"
+
+# Find and delete by name
+DEVICE_ID=$(rseam devices get --name "Old Lock" --id-only)
+rseam devices delete --device-id "$DEVICE_ID"
+```
+
+**Use Cases:**
+- Remove decommissioned devices
+- Clean up workspace
+- Reset device connections
+
+---
+
 ## Lock Commands
+
+### locks get
+Get a specific lock's status and properties.
+
+**Purpose:** Retrieve detailed information about a lock.
+
+**Parameters:**
+- `--device-id` (required): Lock device ID
+
+**Output:** Lock object with status, properties, and capabilities
+
+**Examples:**
+```bash
+# Get lock details
+rseam locks get --device-id "dev_123"
+
+# Get raw JSON for parsing
+rseam locks get --device-id "dev_123" --raw
+```
+
+**Use Cases:**
+- Check lock state (locked/unlocked)
+- View lock capabilities
+- Verify lock before operations
+
+---
+
+### locks list
+List all locks in the workspace.
+
+**Purpose:** Retrieve all lock devices with filtering.
+
+**Parameters:**
+- `--device-id` (optional): Filter by specific device ID
+
+**Output:** Array of lock objects
+
+**Examples:**
+```bash
+# List all locks
+rseam locks list
+
+# List with raw JSON
+rseam locks list --raw
+
+# Get IDs only
+rseam locks list --id-only
+```
+
+**Use Cases:**
+- Inventory all locks
+- Find locks for bulk operations
+- Monitor lock fleet
+
+---
 
 ### locks unlock-door
 Unlock a smart lock.
@@ -89,7 +195,7 @@ Unlock a smart lock.
 **Parameters:**
 - `--device-id` (required): The lock device to unlock
 
-**Output:** Lock state confirmation
+**Output:** Action attempt with status
 
 **Examples:**
 ```bash
@@ -116,16 +222,17 @@ Lock a smart lock.
 **Parameters:**
 - `--device-id` (required): The lock device to lock
 
-**Output:** Lock state confirmation
+**Output:** Action attempt with status
 
 **Examples:**
 ```bash
 # Lock a door
 rseam locks lock-door --device-id "dev_123"
 
-# Verify then lock
-rseam devices get --device-id "dev_123"
-rseam locks lock-door --device-id "dev_123"
+# Lock all doors
+for id in $(rseam locks list --id-only); do
+  rseam locks lock-door --device-id "$id"
+done
 ```
 
 **Use Cases:**
@@ -169,7 +276,32 @@ CODE_ID=$(rseam access-codes create \
 - Add guest access
 - Create temporary contractor codes
 - Manage access for specific users
-- Multi-code per lock scenarios
+
+---
+
+### access-codes get
+Get a specific access code by ID.
+
+**Purpose:** Retrieve details about a single access code.
+
+**Parameters:**
+- `--access-code-id` (required): Access code ID to retrieve
+
+**Output:** Access code object with properties
+
+**Examples:**
+```bash
+# Get access code details
+rseam access-codes get --access-code-id "ac_123"
+
+# Get raw JSON
+rseam access-codes get --access-code-id "ac_123" --raw
+```
+
+**Use Cases:**
+- Verify code exists
+- Check code status
+- Get code properties before update
 
 ---
 
@@ -188,17 +320,53 @@ List all access codes for a device.
 # List all codes for a device
 rseam access-codes list --device-id "dev_123"
 
-# List and get raw JSON
-rseam access-codes list --device-id "dev_123" --raw
-
 # List all codes across all devices
 rseam access-codes list
+
+# Get IDs only
+rseam access-codes list --device-id "dev_123" --id-only
 ```
 
 **Use Cases:**
 - Audit active codes
 - Find code to delete
 - Track access changes
+
+---
+
+### access-codes update
+Update an existing access code.
+
+**Purpose:** Modify access code properties.
+
+**Parameters:**
+- `--access-code-id` (required): Access code ID to update
+- `--name` (optional): New name for the code
+- `--code` (optional): New PIN/code value
+- `--starts-at` (optional): ISO8601 start time for time-limited codes
+- `--ends-at` (optional): ISO8601 end time for time-limited codes
+
+**Output:** Updated access code object
+
+**Examples:**
+```bash
+# Rename a code
+rseam access-codes update --access-code-id "ac_123" --name "VIP Guest"
+
+# Change the PIN
+rseam access-codes update --access-code-id "ac_123" --code "9999"
+
+# Set time-limited access
+rseam access-codes update --access-code-id "ac_123" \
+  --starts-at "2024-01-01T09:00:00Z" \
+  --ends-at "2024-01-01T17:00:00Z"
+```
+
+**Use Cases:**
+- Update code names
+- Change PINs
+- Convert to time-limited access
+- Extend/modify access windows
 
 ---
 
@@ -215,17 +383,49 @@ Delete an access code.
 **Examples:**
 ```bash
 # Delete a code
-rseam access-codes delete --access-code-id "code_456"
+rseam access-codes delete --access-code-id "ac_123"
 
-# Get code ID then delete
-CODE_ID=$(rseam access-codes list --device-id "dev_123" --id-only)
-rseam access-codes delete --access-code-id "$CODE_ID"
+# Delete all codes for a device
+for id in $(rseam access-codes list --device-id "dev_123" --id-only); do
+  rseam access-codes delete --access-code-id "$id"
+done
 ```
 
 **Use Cases:**
 - Revoke guest access
 - Remove expired codes
 - Deactivate contractor access
+
+---
+
+### access-codes generate-code
+Generate a new access code automatically.
+
+**Purpose:** Let Seam auto-generate a unique PIN for a device.
+
+**Parameters:**
+- `--device-id` (required): The lock to add code to
+- `--name` (optional): Human-readable name for this code
+
+**Output:** Created access code object with auto-generated PIN
+
+**Examples:**
+```bash
+# Generate code with auto PIN
+rseam access-codes generate-code --device-id "dev_123" --name "Auto Guest"
+
+# Generate and capture the code value
+CODE=$(rseam access-codes generate-code \
+  --device-id "dev_123" \
+  --name "Temp Access" \
+  --raw | jq -r '.code')
+echo "Generated code: $CODE"
+```
+
+**Use Cases:**
+- Auto-generate unique PINs
+- Avoid PIN conflicts
+- Temporary access without choosing codes
 
 ---
 
@@ -301,7 +501,12 @@ rseam locks unlock-door --device-id "$DEVICE_ID"
 
 ### Bulk Operations
 ```bash
-# Create multiple codes for same lock
+# Lock all doors
+for id in $(rseam locks list --id-only); do
+  rseam locks lock-door --device-id "$id"
+done
+
+# Create multiple codes
 for code in 1111 2222 3333; do
   rseam access-codes create --device-id "dev_123" --code "$code"
 done
@@ -360,6 +565,29 @@ All commands use this key automatically.
 
 ---
 
+## Command Summary
+
+| Command | Purpose |
+|---------|---------|
+| `devices list` | List all devices |
+| `devices get` | Get device by ID or name |
+| `devices update` | Update device properties |
+| `devices delete` | Delete a device |
+| `locks get` | Get lock status |
+| `locks list` | List all locks |
+| `locks unlock-door` | Unlock a door |
+| `locks lock-door` | Lock a door |
+| `access-codes create` | Create access code with specific PIN |
+| `access-codes get` | Get access code details |
+| `access-codes list` | List access codes |
+| `access-codes update` | Update access code |
+| `access-codes delete` | Delete access code |
+| `access-codes generate-code` | Auto-generate access code |
+| `health get-health` | Check API health |
+| `connect-webviews create` | Create device pairing webview |
+
+---
+
 ## Tips for Agents
 
 1. **Always check health first** if you're unsure of connectivity
@@ -367,6 +595,7 @@ All commands use this key automatically.
 3. **Use --id-only for piping** between commands
 4. **List first, then get** if you need to find things by name
 5. **Check parameter requirements** - some flags are mandatory, others optional
+6. **Use generate-code** when you don't need a specific PIN
 
 ---
 
@@ -382,8 +611,15 @@ mod tests {
     fn test_agent_context_generates() {
         let context = generate_agent_context();
         assert!(context.contains("devices list"));
+        assert!(context.contains("devices update"));
+        assert!(context.contains("devices delete"));
+        assert!(context.contains("locks get"));
+        assert!(context.contains("locks list"));
         assert!(context.contains("locks unlock-door"));
         assert!(context.contains("access-codes create"));
+        assert!(context.contains("access-codes get"));
+        assert!(context.contains("access-codes update"));
+        assert!(context.contains("access-codes generate-code"));
         assert!(context.contains("--help-agent"));
     }
 
@@ -398,5 +634,11 @@ mod tests {
     fn test_agent_context_has_use_cases() {
         let context = generate_agent_context();
         assert!(context.contains("Use Cases:"));
+    }
+
+    #[test]
+    fn test_agent_context_has_command_summary() {
+        let context = generate_agent_context();
+        assert!(context.contains("Command Summary"));
     }
 }
