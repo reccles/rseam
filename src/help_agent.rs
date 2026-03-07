@@ -460,6 +460,34 @@ rseam access-codes create-multiple \
 
 ---
 
+### access-codes update-multiple
+Update multiple access codes at once.
+
+**Purpose:** Batch update access codes.
+
+**Parameters:**
+- `--updates-json` (required): JSON array of update specs (must include access_code_id)
+
+**Output:** Array of updated access code objects
+
+**Examples:**
+```bash
+# Update multiple codes
+rseam access-codes update-multiple \
+  --updates-json '[{"access_code_id":"ac_123","name":"VIP 1"},{"access_code_id":"ac_456","name":"VIP 2"}]'
+
+# Extend multiple codes' end times
+rseam access-codes update-multiple \
+  --updates-json '[{"access_code_id":"ac_123","ends_at":"2024-12-31T23:59:59Z"},{"access_code_id":"ac_456","ends_at":"2024-12-31T23:59:59Z"}]'
+```
+
+**Use Cases:**
+- Bulk rename access codes
+- Extend expiration for multiple codes
+- Batch update time windows
+
+---
+
 ## Health Commands
 
 ### health get-health
@@ -614,6 +642,8 @@ All commands use this key automatically.
 | `access-codes update` | Update access code |
 | `access-codes delete` | Delete access code |
 | `access-codes generate-code` | Auto-generate access code |
+| `access-codes create-multiple` | Batch create access codes |
+| `access-codes update-multiple` | Batch update access codes |
 | `health get-health` | Check API health |
 | `connect-webviews create` | Create device pairing webview |
 
