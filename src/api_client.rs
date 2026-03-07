@@ -39,24 +39,20 @@ impl SeamClient {
     }
 
     /// Make a POST request to the SEAM API
-    /// 
-    /// The API key is sent in the request body as per Seam API specifications.
     pub async fn post(&self, path: &str, params: Value) -> SeamResult<Value> {
         let url = format!("{}{}", self.endpoint, path);
 
-        let mut body = match params {
-            Value::Object(map) => map,
-            _ => serde_json::Map::new(),
+        let body = match params {
+            Value::Object(map) => Value::Object(map),
+            _ => Value::Object(serde_json::Map::new()),
         };
-
-        // Insert API key into request body (Seam API requirement)
-        body.insert("api_key".to_string(), Value::String(self.api_key.clone()));
 
         let response = self
             .client
             .post(&url)
+            .header("Authorization", format!("Bearer {}", self.api_key))
             .header("Content-Type", "application/json")
-            .json(&Value::Object(body))
+            .json(&body)
             .send()
             .await?;
 
