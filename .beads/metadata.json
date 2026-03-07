@@ -1,0 +1,7 @@
+{
+  "database": "dolt",
+  "backend": "dolt",
+  "dolt_mode": "server",
+  "dolt_database": "rseam",
+  "project_id": "de4c3a01-4b3d-4c67-8c15-5ff73fffda16"
+}
