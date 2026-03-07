@@ -38,8 +38,8 @@ pub async fn execute(
         AccessCodeCommands::GetTimeline { access_code_id } => {
             get_timeline(client, access_code_id, id_only, raw).await
         }
-        AccessCodeCommands::PullBackupAccessCode { access_code_id: _ } => {
-            todo!("pull_backup_access_code - will be implemented in 5.2")
+        AccessCodeCommands::PullBackupAccessCode { access_code_id } => {
+            pull_backup_access_code(client, access_code_id, id_only, raw).await
         }
     }
 }
@@ -219,6 +219,21 @@ async fn get_timeline(
     });
 
     let response = client.post("/access_codes/get_timeline", params).await?;
+    print_output(&response, id_only, raw);
+    Ok(())
+}
+
+async fn pull_backup_access_code(
+    client: &SeamClient,
+    access_code_id: String,
+    id_only: bool,
+    raw: bool,
+) -> SeamResult<()> {
+    let params = json!({
+        "access_code_id": access_code_id,
+    });
+
+    let response = client.post("/access_codes/pull_backup_access_code", params).await?;
     print_output(&response, id_only, raw);
     Ok(())
 }

@@ -514,6 +514,32 @@ rseam access-codes get-timeline --access-code-id "ac_123" --raw
 
 ---
 
+### access-codes pull-backup-access-code
+Retrieve a backup access code from the provider.
+
+**Purpose:** Pull backup/recovery codes that may be stored on the device provider's system.
+
+**Parameters:**
+- `--access-code-id` (required): The access code to pull backup for
+
+**Output:** Backup access code information from the provider
+
+**Examples:**
+```bash
+# Pull backup code
+rseam access-codes pull-backup-access-code --access-code-id "ac_123"
+
+# Get raw JSON
+rseam access-codes pull-backup-access-code --access-code-id "ac_123" --raw
+```
+
+**Use Cases:**
+- Recover codes after sync issues
+- Verify provider-side code state
+- Debug code provisioning problems
+
+---
+
 ## Health Commands
 
 ### health get-health
@@ -670,6 +696,8 @@ All commands use this key automatically.
 | `access-codes generate-code` | Auto-generate access code |
 | `access-codes create-multiple` | Batch create access codes |
 | `access-codes update-multiple` | Batch update access codes |
+| `access-codes get-timeline` | Get code change history |
+| `access-codes pull-backup-access-code` | Pull backup code from provider |
 | `health get-health` | Check API health |
 | `connect-webviews create` | Create device pairing webview |
 
