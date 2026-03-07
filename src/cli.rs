@@ -109,16 +109,49 @@ pub enum AccessCodeCommands {
         name: Option<String>,
     },
 
+    /// Get an access code
+    Get {
+        #[arg(long)]
+        access_code_id: String,
+    },
+
     /// List access codes
     List {
         #[arg(long)]
         device_id: Option<String>,
     },
 
+    /// Update an access code
+    Update {
+        #[arg(long)]
+        access_code_id: String,
+
+        #[arg(long)]
+        name: Option<String>,
+
+        #[arg(long)]
+        code: Option<String>,
+
+        #[arg(long)]
+        starts_at: Option<String>,
+
+        #[arg(long)]
+        ends_at: Option<String>,
+    },
+
     /// Delete an access code
     Delete {
         #[arg(long)]
         access_code_id: String,
+    },
+
+    /// Generate a new access code automatically
+    GenerateCode {
+        #[arg(long)]
+        device_id: String,
+
+        #[arg(long)]
+        name: Option<String>,
     },
 }
 
@@ -302,24 +335,49 @@ mod tests {
     }
 
     #[test]
-    fn test_cli_parses_locks_lock() {
-        let cli = Cli::parse_from(["rseam", "locks", "lock-door", "--device-id", "dev_456"]);
+    fn test_cli_parses_access_codes_get() {
+        let cli = Cli::parse_from(["rseam", "access-codes", "get", "--access-code-id", "ac_123"]);
         match cli.command {
-            Some(Commands::Locks { command }) => {
-                assert_eq!(command, LockCommands::LockDoor { device_id: "dev_456".to_string() });
+            Some(Commands::AccessCodes { command }) => {
+                assert_eq!(command, AccessCodeCommands::Get { access_code_id: "ac_123".to_string() });
             }
-            _ => panic!("Expected Locks command"),
+            _ => panic!("Expected AccessCodes command"),
         }
     }
 
     #[test]
-    fn test_cli_parses_health_get_health() {
-        let cli = Cli::parse_from(["rseam", "health", "get-health"]);
+    fn test_cli_parses_access_codes_update() {
+        let cli = Cli::parse_from([
+            "rseam", "access-codes", "update", "--access-code-id", "ac_123",
+            "--name", "New Name", "--code", "9999"
+        ]);
         match cli.command {
-            Some(Commands::Health { command }) => {
-                assert_eq!(command, HealthCommands::GetHealth);
+            Some(Commands::AccessCodes { command }) => {
+                assert_eq!(command, AccessCodeCommands::Update {
+                    access_code_id: "ac_123".to_string(),
+                    name: Some("New Name".to_string()),
+                    code: Some("9999".to_string()),
+                    starts_at: None,
+                    ends_at: None
+                });
             }
-            _ => panic!("Expected Health command"),
+            _ => panic!("Expected AccessCodes command"),
+        }
+    }
+
+    #[test]
+    fn test_cli_parses_access_codes_generate_code() {
+        let cli = Cli::parse_from([
+            "rseam", "access-codes", "generate-code", "--device-id", "dev_123", "--name", "Guest"
+        ]);
+        match cli.command {
+            Some(Commands::AccessCodes { command }) => {
+                assert_eq!(command, AccessCodeCommands::GenerateCode {
+                    device_id: "dev_123".to_string(),
+                    name: Some("Guest".to_string())
+                });
+            }
+            _ => panic!("Expected AccessCodes command"),
         }
     }
 
@@ -338,6 +396,17 @@ mod tests {
                 });
             }
             _ => panic!("Expected AccessCodes command"),
+        }
+    }
+
+    #[test]
+    fn test_cli_parses_health_get_health() {
+        let cli = Cli::parse_from(["rseam", "health", "get-health"]);
+        match cli.command {
+            Some(Commands::Health { command }) => {
+                assert_eq!(command, HealthCommands::GetHealth);
+            }
+            _ => panic!("Expected Health command"),
         }
     }
 
