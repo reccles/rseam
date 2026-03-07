@@ -1,23 +1,27 @@
+---
+name: rseam
+description: Use when the user asks about smart locks, door locks, access codes, or PIN management. Invoke when the user wants to lock/unlock doors remotely, create or manage guest codes, set up temporary access, or automate lock operations via CLI. Also use when the user mentions Seam, Seam API, or smart home access control. Do NOT use for general home automation (lights, thermostats), physical key management, or lock hardware installation.
+---
+
 # rseam - Seam Smart Lock CLI
 
-## When to Use This Skill
+## Table of Contents
 
-Activate this skill when:
-- User asks about **smart locks**, **door locks**, or **access codes**
-- User wants to **lock/unlock doors** remotely
-- User needs to **manage PIN codes** for locks (create, update, delete)
-- User mentions **Seam**, **Seam API**, or **smart home access control**
-- User wants to **automate lock operations** via CLI
-- User asks about **temporary access** or **guest codes** for doors
-
-Do NOT use this skill for:
-- General home automation beyond locks (lights, thermostats, etc.)
-- Physical key management
-- Lock hardware installation/troubleshooting
+- [Read This First](#read-this-first)
+- [Quick Reference](#quick-reference)
+- [Core Workflows](#core-workflows)
+- [Command Reference](#command-reference)
+- [Tips for Agents](#tips-for-agents)
 
 ---
 
-## Prerequisites
+## Read This First
+
+### What This Skill Does
+
+This skill enables CLI-based control of smart locks via the Seam API. Use it to lock/unlock doors, manage access codes (PINs), and automate access control workflows.
+
+### Prerequisites
 
 ```bash
 # API key must be set
@@ -42,20 +46,7 @@ The CLI reads `SEAM_API_KEY` from environment. All commands fail without it.
 | `rseam access-codes delete --access-code-id ID` | Revoke access code |
 | `rseam health get-health` | Check API connectivity |
 
----
-
-## Output Modes
-
-```bash
-# Pretty JSON (default) - human readable
-rseam devices list
-
-# Raw JSON - single line, good for piping
-rseam devices list --raw
-
-# ID only - just the IDs, one per line (best for scripting)
-rseam devices list --id-only
-```
+**Output flags:** `--raw` (compact JSON), `--id-only` (IDs only, for scripting)
 
 ---
 
@@ -123,7 +114,9 @@ rseam health get-health || { echo "API unreachable"; exit 1; }
 
 ---
 
-## Device Commands
+## Command Reference
+
+### Device Commands
 
 ### `devices list`
 List all devices. Optional filters: `--device-id`, `--name`
@@ -139,7 +132,7 @@ Remove device. Params: `--device-id` (required)
 
 ---
 
-## Lock Commands
+### Lock Commands
 
 ### `locks list`
 List all locks. Optional: `--device-id` filter
@@ -155,7 +148,7 @@ Lock a door. Params: `--device-id` (required)
 
 ---
 
-## Access Code Commands
+### Access Code Commands
 
 ### `access-codes create`
 Create code with specific PIN.
@@ -187,7 +180,7 @@ Revoke code. Params: `--access-code-id` (required)
 
 ---
 
-## Connect Webview Commands
+### Connect Webview Commands
 
 ### `connect-webviews create`
 Create device pairing URL for end users.
@@ -201,7 +194,7 @@ echo "Send this to user: $URL"
 
 ---
 
-## JSON Processing Tips
+### JSON Processing Tips
 
 ```bash
 # Extract specific fields
@@ -216,7 +209,7 @@ rseam access-codes generate-code --device-id "$ID" --raw | jq -r '.code'
 
 ---
 
-## Agent Tips
+## Tips for Agents
 
 1. **Always use `--id-only`** when chaining commands
 2. **Use `--raw`** when parsing JSON output
@@ -227,12 +220,3 @@ rseam access-codes generate-code --device-id "$ID" --raw | jq -r '.code'
 
 ---
 
-## Full Documentation
-
-For complete `--help-agent` output with all examples:
-
-```bash
-rseam --help-agent
-```
-
-API docs: https://docs.seam.co
