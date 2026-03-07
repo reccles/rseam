@@ -20,6 +20,9 @@ pub async fn execute(
         DeviceCommands::Update { device_id, name } => {
             update_device(client, device_id, name, id_only, raw).await
         }
+        DeviceCommands::Delete { device_id } => {
+            delete_device(client, device_id, id_only, raw).await
+        }
     }
 }
 
@@ -85,6 +88,21 @@ async fn update_device(
     }
 
     let response = client.post("/devices/update", params).await?;
+    print_output(&response, id_only, raw);
+    Ok(())
+}
+
+async fn delete_device(
+    client: &SeamClient,
+    device_id: String,
+    id_only: bool,
+    raw: bool,
+) -> SeamResult<()> {
+    let params = json!({
+        "device_id": device_id,
+    });
+
+    let response = client.post("/devices/delete", params).await?;
     print_output(&response, id_only, raw);
     Ok(())
 }

@@ -87,6 +87,12 @@ pub enum DeviceCommands {
         #[arg(long)]
         name: Option<String>,
     },
+
+    /// Delete a device
+    Delete {
+        #[arg(long)]
+        device_id: String,
+    },
 }
 
 #[derive(Subcommand, Debug, PartialEq)]
@@ -191,7 +197,6 @@ mod tests {
 
     #[test]
     fn test_cli_parses_help() {
-        // Verify the CLI can generate help without panicking
         let _ = Cli::command().render_help();
     }
 
@@ -257,13 +262,7 @@ mod tests {
     #[test]
     fn test_cli_parses_devices_update() {
         let cli = Cli::parse_from([
-            "rseam",
-            "devices",
-            "update",
-            "--device-id",
-            "dev_123",
-            "--name",
-            "New Name",
+            "rseam", "devices", "update", "--device-id", "dev_123", "--name", "New Name",
         ]);
         match cli.command {
             Some(Commands::Devices { command }) => {
@@ -289,6 +288,22 @@ mod tests {
                     DeviceCommands::Update {
                         device_id: "dev_123".to_string(),
                         name: None
+                    }
+                );
+            }
+            _ => panic!("Expected Devices command"),
+        }
+    }
+
+    #[test]
+    fn test_cli_parses_devices_delete() {
+        let cli = Cli::parse_from(["rseam", "devices", "delete", "--device-id", "dev_123"]);
+        match cli.command {
+            Some(Commands::Devices { command }) => {
+                assert_eq!(
+                    command,
+                    DeviceCommands::Delete {
+                        device_id: "dev_123".to_string()
                     }
                 );
             }
@@ -326,15 +341,8 @@ mod tests {
     #[test]
     fn test_cli_parses_access_codes_create() {
         let cli = Cli::parse_from([
-            "rseam",
-            "access-codes",
-            "create",
-            "--device-id",
-            "dev_123",
-            "--code",
-            "1234",
-            "--name",
-            "Guest Code",
+            "rseam", "access-codes", "create", "--device-id", "dev_123",
+            "--code", "1234", "--name", "Guest Code",
         ]);
         match cli.command {
             Some(Commands::AccessCodes { command }) => {
@@ -391,11 +399,7 @@ mod tests {
     #[test]
     fn test_cli_connect_webviews_with_providers() {
         let cli = Cli::parse_from([
-            "rseam",
-            "connect-webviews",
-            "create",
-            "--accepted-providers",
-            "august,level",
+            "rseam", "connect-webviews", "create", "--accepted-providers", "august,level",
         ]);
         match cli.command {
             Some(Commands::ConnectWebviews { command }) => {
