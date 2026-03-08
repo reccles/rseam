@@ -11,8 +11,8 @@ pub async fn execute(
     raw: bool,
 ) -> SeamResult<()> {
     match command {
-        AccessCodeCommands::Create { device_id, code, name } => {
-            create(client, device_id, code, name, id_only, raw).await
+        AccessCodeCommands::Create { device_id, code, name, starts_at, ends_at } => {
+            create(client, device_id, code, name, starts_at, ends_at, id_only, raw).await
         }
         AccessCodeCommands::Get { access_code_id } => {
             get(client, access_code_id, id_only, raw).await
@@ -49,6 +49,8 @@ async fn create(
     device_id: String,
     code: String,
     name: Option<String>,
+    starts_at: Option<String>,
+    ends_at: Option<String>,
     id_only: bool,
     raw: bool,
 ) -> SeamResult<()> {
@@ -59,6 +61,14 @@ async fn create(
 
     if let Some(n) = name {
         params["name"] = n.into();
+    }
+
+    if let Some(start) = starts_at {
+        params["starts_at"] = start.into();
+    }
+
+    if let Some(end) = ends_at {
+        params["ends_at"] = end.into();
     }
 
     let response = client.post("/access_codes/create", params).await?;

@@ -77,8 +77,18 @@ rseam access-codes generate-code --device-id "$LOCK_ID" --name "Auto Guest"
 
 ### Create Time-Limited Access
 
+Time-limited codes are inactive outside their time window and automatically deactivate.
+
 ```bash
-# Create code then set time limits
+# Create code with time window in one command
+rseam access-codes create \
+  --device-id "$LOCK_ID" \
+  --code "5678" \
+  --name "Contractor" \
+  --starts-at "2024-01-15T09:00:00Z" \
+  --ends-at "2024-01-15T17:00:00Z"
+
+# Or create then add timing
 CODE_ID=$(rseam access-codes create \
   --device-id "$LOCK_ID" \
   --code "5678" \
@@ -88,6 +98,14 @@ CODE_ID=$(rseam access-codes create \
 rseam access-codes update --access-code-id "$CODE_ID" \
   --starts-at "2024-01-15T09:00:00Z" \
   --ends-at "2024-01-15T17:00:00Z"
+```
+
+**Use Cases:**
+- Business-hours-only contractor access
+- Single-day event guest codes
+- Time-window deliveries
+- Shift-based employee access
+- Temporary weekend access
 ```
 
 ### Revoke All Access Codes

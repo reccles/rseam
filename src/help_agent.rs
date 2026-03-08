@@ -246,12 +246,14 @@ done
 ### access-codes create
 Create a new access code for a device.
 
-**Purpose:** Generate a new PIN/code for temporary or permanent access.
+**Purpose:** Generate a new PIN/code for temporary or permanent access, with optional time-limiting.
 
 **Parameters:**
 - `--device-id` (required): The lock to add code to
 - `--code` (required): The PIN/code value
 - `--name` (optional): Human-readable name for this code
+- `--starts-at` (optional): ISO8601 start time (e.g. 2024-01-15T09:00:00Z) - code inactive before this
+- `--ends-at` (optional): ISO8601 end time (e.g. 2024-01-15T17:00:00Z) - code inactive after this
 
 **Output:** Created access code object with ID and metadata
 
@@ -263,18 +265,36 @@ rseam access-codes create \
   --code "1234" \
   --name "Guest Code"
 
+# Create time-limited code (business hours only)
+rseam access-codes create \
+  --device-id "dev_123" \
+  --code "5678" \
+  --name "Contractor" \
+  --starts-at "2024-01-15T09:00:00Z" \
+  --ends-at "2024-01-15T17:00:00Z"
+
+# Create single-day access code
+rseam access-codes create \
+  --device-id "dev_123" \
+  --code "9999" \
+  --name "Event Guest" \
+  --starts-at "2024-02-20T00:00:00Z" \
+  --ends-at "2024-02-20T23:59:59Z"
+
 # Create code and capture ID
 CODE_ID=$(rseam access-codes create \
   --device-id "dev_123" \
-  --code "5678" \
+  --code "7777" \
   --name "Delivery" \
   --id-only)
 ```
 
 **Use Cases:**
 - Add guest access
-- Create temporary contractor codes
-- Manage access for specific users
+- Create temporary contractor codes (auto-deactivates)
+- Time-limited event access
+- Business-hours-only employee codes
+- Single-day delivery/service access
 
 ---
 

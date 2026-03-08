@@ -104,6 +104,14 @@ pub enum AccessCodeCommands {
 
         #[arg(long)]
         name: Option<String>,
+
+        /// ISO8601 start time (e.g. 2024-01-15T09:00:00Z)
+        #[arg(long)]
+        starts_at: Option<String>,
+
+        /// ISO8601 end time (e.g. 2024-01-15T17:00:00Z)
+        #[arg(long)]
+        ends_at: Option<String>,
     },
 
     /// Get an access code
@@ -418,7 +426,9 @@ mod tests {
                 assert_eq!(command, AccessCodeCommands::Create {
                     device_id: "dev_123".to_string(),
                     code: "1234".to_string(),
-                    name: Some("Guest".to_string())
+                    name: Some("Guest".to_string()),
+                    starts_at: None,
+                    ends_at: None,
                 });
             }
             _ => panic!("Expected AccessCodes command"),
