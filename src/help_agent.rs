@@ -265,7 +265,7 @@ rseam access-codes create \
   --code "1234" \
   --name "Guest Code"
 
-# Create time-limited code (business hours only)
+# Create time-limited code (business hours, UTC)
 rseam access-codes create \
   --device-id "dev_123" \
   --code "5678" \
@@ -273,13 +273,29 @@ rseam access-codes create \
   --starts-at "2024-01-15T09:00:00Z" \
   --ends-at "2024-01-15T17:00:00Z"
 
-# Create single-day access code
+# Create time-limited code (business hours, PST)
+rseam access-codes create \
+  --device-id "dev_123" \
+  --code "5678" \
+  --name "Contractor" \
+  --starts-at "2024-01-15T09:00:00-08:00" \
+  --ends-at "2024-01-15T17:00:00-08:00"
+
+# Create single-day access code (PST)
 rseam access-codes create \
   --device-id "dev_123" \
   --code "9999" \
   --name "Event Guest" \
-  --starts-at "2024-02-20T00:00:00Z" \
-  --ends-at "2024-02-20T23:59:59Z"
+  --starts-at "2024-02-20T00:00:00-08:00" \
+  --ends-at "2024-02-20T23:59:59-08:00"
+
+# Create weekend-only code (PST, Friday 5pm to Sunday 11:59pm)
+rseam access-codes create \
+  --device-id "dev_123" \
+  --code "7777" \
+  --name "Weekend Guest" \
+  --starts-at "2024-02-16T17:00:00-08:00" \
+  --ends-at "2024-02-18T23:59:59-08:00"
 
 # Create code and capture ID
 CODE_ID=$(rseam access-codes create \

@@ -77,10 +77,19 @@ rseam access-codes generate-code --device-id "$LOCK_ID" --name "Auto Guest"
 
 ### Create Time-Limited Access
 
-Time-limited codes are inactive outside their time window and automatically deactivate.
+Time-limited codes are inactive outside their time window and automatically deactivate. 
+Times use ISO8601 format with timezone offset (e.g., `-08:00` for PST, `Z` for UTC).
 
 ```bash
-# Create code with time window in one command
+# Create code with time window (PST business hours)
+rseam access-codes create \
+  --device-id "$LOCK_ID" \
+  --code "5678" \
+  --name "Contractor" \
+  --starts-at "2024-01-15T09:00:00-08:00" \
+  --ends-at "2024-01-15T17:00:00-08:00"
+
+# Or use UTC (Z)
 rseam access-codes create \
   --device-id "$LOCK_ID" \
   --code "5678" \
