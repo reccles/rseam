@@ -83,6 +83,7 @@ Update device properties.
 **Parameters:**
 - `--device-id` (required): Device ID to update
 - `--name` (optional): New name for the device
+- `--metadata` (optional): Custom metadata as JSON object
 
 **Output:** Updated device object
 
@@ -90,6 +91,12 @@ Update device properties.
 ```bash
 # Rename a device
 rseam devices update --device-id "dev_123" --name "Back Door Lock"
+
+# Add custom metadata to a device
+rseam devices update --device-id "dev_123" --metadata '{"floor":"3","color":"silver"}'
+
+# Update name and metadata together
+rseam devices update --device-id "dev_123" --name "Back Door" --metadata '{"building":"HQ"}'
 
 # Update without name (no-op, useful for refresh)
 rseam devices update --device-id "dev_123"

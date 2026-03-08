@@ -83,6 +83,10 @@ pub enum DeviceCommands {
 
         #[arg(long)]
         name: Option<String>,
+
+        /// Custom metadata as JSON object, e.g. '{"floor":"3","color":"silver"}'
+        #[arg(long)]
+        metadata: Option<String>,
     },
 
     /// Delete a device
@@ -326,7 +330,8 @@ mod tests {
             Some(Commands::Devices { command }) => {
                 assert_eq!(command, DeviceCommands::Update {
                     device_id: "dev_123".to_string(),
-                    name: Some("New".to_string())
+                    name: Some("New".to_string()),
+                    metadata: None
                 });
             }
             _ => panic!("Expected Devices command"),
@@ -478,6 +483,25 @@ mod tests {
                 assert_eq!(command, ConnectWebviewCommands::Create { accepted_providers: None });
             }
             _ => panic!("Expected ConnectWebviews command"),
+        }
+    }
+
+    #[test]
+    fn test_cli_parses_devices_update_with_metadata() {
+        let cli = Cli::parse_from([
+            "rseam", "devices", "update",
+            "--device-id", "dev_123",
+            "--metadata", r#"{"floor":"3","color":"silver"}"#
+        ]);
+        match cli.command {
+            Some(Commands::Devices { command }) => {
+                assert_eq!(command, DeviceCommands::Update {
+                    device_id: "dev_123".to_string(),
+                    name: None,
+                    metadata: Some(r#"{"floor":"3","color":"silver"}"#.to_string())
+                });
+            }
+            _ => panic!("Expected Devices command"),
         }
     }
 }

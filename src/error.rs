@@ -8,6 +8,9 @@ pub enum SeamError {
     #[error("Missing required parameter: {0}")]
     MissingParameter(String),
 
+    #[error("Invalid parameter: {0}")]
+    InvalidParameter(String),
+
     #[error("Authentication error: {0}")]
     AuthError(String),
 
@@ -34,6 +37,12 @@ mod tests {
     fn test_missing_parameter_display() {
         let err = SeamError::MissingParameter("device_id".to_string());
         assert_eq!(err.to_string(), "Missing required parameter: device_id");
+    }
+
+    #[test]
+    fn test_invalid_parameter_display() {
+        let err = SeamError::InvalidParameter("Invalid JSON".to_string());
+        assert_eq!(err.to_string(), "Invalid parameter: Invalid JSON");
     }
 
     #[test]

@@ -152,7 +152,21 @@ List all devices. Optional filters: `--device-id`, `--name`
 Get single device. Params: `--device-id` or `--name`
 
 ### `devices update`
-Update device. Params: `--device-id` (required), `--name` (optional)
+Update device properties and custom metadata.
+- `--device-id` (required) - Device ID to update
+- `--name` (optional) - New name for the device
+- `--metadata` (optional) - Custom metadata as JSON object
+
+```bash
+# Rename a device
+rseam devices update --device-id "dev_123" --name "Back Door Lock"
+
+# Add custom metadata
+rseam devices update --device-id "dev_123" --metadata '{"floor":"3","location":"building_a"}'
+
+# Update name and metadata together
+rseam devices update --device-id "dev_123" --name "Back Door" --metadata '{"building":"HQ","floor":"3"}'
+```
 
 ### `devices delete`
 Remove device. Params: `--device-id` (required)

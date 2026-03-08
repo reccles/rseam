@@ -1,6 +1,6 @@
 use crate::api_client::SeamClient;
 use crate::cli::DeviceCommands;
-use crate::error::SeamResult;
+use crate::error::{SeamError, SeamResult};
 use super::print_output;
 use serde_json::json;
 
@@ -17,8 +17,8 @@ pub async fn execute(
         DeviceCommands::Get { device_id, name } => {
             get_device(client, device_id, name, id_only, raw).await
         }
-        DeviceCommands::Update { device_id, name } => {
-            update_device(client, device_id, name, id_only, raw).await
+        DeviceCommands::Update { device_id, name, metadata } => {
+            update_device(client, device_id, name, metadata, id_only, raw).await
         }
         DeviceCommands::Delete { device_id } => {
             delete_device(client, device_id, id_only, raw).await
@@ -71,6 +71,7 @@ async fn update_device(
     client: &SeamClient,
     device_id: String,
     name: Option<String>,
+    metadata: Option<String>,
     id_only: bool,
     raw: bool,
 ) -> SeamResult<()> {
@@ -80,6 +81,12 @@ async fn update_device(
 
     if let Some(n) = name {
         params["name"] = n.into();
+    }
+
+    if let Some(meta_str) = metadata {
+        let meta: serde_json::Value = serde_json::from_str(&meta_str)
+            .map_err(|e| SeamError::InvalidParameter(format!("Invalid metadata JSON: {}", e)))?;
+        params["custom_metadata"] = meta;
     }
 
     let response = client.post("/devices/update", params).await?;
