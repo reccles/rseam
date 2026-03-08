@@ -9,9 +9,18 @@ use serde_json::Value;
 /// Helper to format and print output
 pub fn print_output(data: &Value, id_only: bool, raw: bool) {
     if id_only {
-        // Extract ID field for script-friendly output
-        if let Some(id) = extract_id(data) {
-            println!("{}", id);
+        // Handle arrays - extract ID from each element
+        if let Some(arr) = data.as_array() {
+            for item in arr {
+                if let Some(id) = extract_id(item) {
+                    println!("{}", id);
+                }
+            }
+        } else {
+            // Single object - extract ID
+            if let Some(id) = extract_id(data) {
+                println!("{}", id);
+            }
         }
     } else if raw {
         println!("{}", data);
@@ -89,5 +98,22 @@ mod tests {
             "device": {"device_id": "nested_id"}
         });
         assert_eq!(extract_id(&data), Some("top_level_id".to_string()));
+    }
+
+    #[test]
+    fn test_extract_id_from_array() {
+        let data = json!([
+            {"device_id": "dev_1", "name": "Device 1"},
+            {"device_id": "dev_2", "name": "Device 2"},
+            {"device_id": "dev_3", "name": "Device 3"}
+        ]);
+        // Verify array can be extracted
+        assert!(data.as_array().is_some());
+        if let Some(arr) = data.as_array() {
+            let ids: Vec<String> = arr.iter()
+                .filter_map(|item| extract_id(item))
+                .collect();
+            assert_eq!(ids, vec!["dev_1", "dev_2", "dev_3"]);
+        }
     }
 }
