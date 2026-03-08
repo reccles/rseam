@@ -254,6 +254,8 @@ Create a new access code for a device.
 - `--name` (optional): Human-readable name for this code
 - `--starts-at` (optional): ISO8601 start time (e.g. 2024-01-15T09:00:00Z) - code inactive before this
 - `--ends-at` (optional): ISO8601 end time (e.g. 2024-01-15T17:00:00Z) - code inactive after this
+- `--offline` (flag): Code works without internet connectivity (syncs to device storage)
+- `--one-time` (flag): Code can only be used once, then auto-invalidates
 
 **Output:** Created access code object with ID and metadata
 
@@ -297,6 +299,28 @@ rseam access-codes create \
   --starts-at "2024-02-16T17:00:00-08:00" \
   --ends-at "2024-02-18T23:59:59-08:00"
 
+# Create offline code (works without internet)
+rseam access-codes create \
+  --device-id "dev_123" \
+  --code "1111" \
+  --name "Backup Code" \
+  --offline
+
+# Create one-time use code (delivery/event)
+rseam access-codes create \
+  --device-id "dev_123" \
+  --code "2222" \
+  --name "Delivery" \
+  --one-time
+
+# Create offline one-time code (critical backup)
+rseam access-codes create \
+  --device-id "dev_123" \
+  --code "3333" \
+  --name "Emergency Backup" \
+  --offline \
+  --one-time
+
 # Create code and capture ID
 CODE_ID=$(rseam access-codes create \
   --device-id "dev_123" \
@@ -311,6 +335,9 @@ CODE_ID=$(rseam access-codes create \
 - Time-limited event access
 - Business-hours-only employee codes
 - Single-day delivery/service access
+- Offline backup access (works without cloud/internet)
+- One-time delivery/event codes (auto-invalidates after use)
+- Critical emergency codes (offline + one-time combined)
 
 ---
 

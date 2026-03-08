@@ -112,6 +112,14 @@ pub enum AccessCodeCommands {
         /// ISO8601 end time (e.g. 2024-01-15T17:00:00Z)
         #[arg(long)]
         ends_at: Option<String>,
+
+        /// Code works offline without internet connectivity
+        #[arg(long)]
+        offline: bool,
+
+        /// Code can only be used once, then auto-invalidates
+        #[arg(long)]
+        one_time: bool,
     },
 
     /// Get an access code
@@ -429,6 +437,8 @@ mod tests {
                     name: Some("Guest".to_string()),
                     starts_at: None,
                     ends_at: None,
+                    offline: false,
+                    one_time: false,
                 });
             }
             _ => panic!("Expected AccessCodes command"),
