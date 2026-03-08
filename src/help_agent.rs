@@ -254,8 +254,8 @@ Create a new access code for a device.
 - `--name` (optional): Human-readable name for this code
 - `--starts-at` (optional): ISO8601 start time (e.g. 2024-01-15T09:00:00Z)
 - `--ends-at` (optional): ISO8601 end time (e.g. 2024-01-15T17:00:00Z)
-- `--offline` (flag): Server generates algorithmic offline code (igloohome, dormakaba, Lockly only). Don't provide --code.
-- `--one-time` (flag, offline only): Code expires after first use. Only works with --offline.
+- `--offline` (flag): Server generates algorithmic offline code (igloohome, dormakaba, Lockly only). Don't provide --code. Requires --starts-at and --ends-at unless using --one-time.
+- `--one-time` (flag, offline only): Code expires after first use. Only works with --offline. Allows skipping time bounds.
 
 **Output:** Created access code object with ID and metadata
 
@@ -299,11 +299,13 @@ rseam access-codes create \
   --starts-at "2024-02-16T17:00:00-08:00" \
   --ends-at "2024-02-18T23:59:59-08:00"
 
-# Create offline code (server generates - no --code needed)
+# Create offline time-bound code (requires time bounds)
 rseam access-codes create \
   --device-id "dev_123" \
   --name "Backup Code" \
-  --offline
+  --offline \
+  --starts-at "2026-03-16T00:00:00-08:00" \
+  --ends-at "2026-03-16T23:59:59-08:00"
 # Output: ✓ Offline code generated: aX9mK2pQ...
 #         (Works offline without internet)
 
