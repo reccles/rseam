@@ -17,9 +17,26 @@ pub fn print_output(data: &Value, id_only: bool, raw: bool) {
                 }
             }
         } else {
-            // Single object - extract ID
-            if let Some(id) = extract_id(data) {
-                println!("{}", id);
+            // Check for common nested arrays (devices, locks, access_codes, etc.)
+            let array_keys = ["devices", "locks", "access_codes", "connect_webviews", "action_attempts"];
+            let mut found = false;
+            for key in &array_keys {
+                if let Some(arr) = data.get(key).and_then(|v| v.as_array()) {
+                    for item in arr {
+                        if let Some(id) = extract_id(item) {
+                            println!("{}", id);
+                        }
+                    }
+                    found = true;
+                    break;
+                }
+            }
+            
+            // If no array found, try to extract ID from the object itself
+            if !found {
+                if let Some(id) = extract_id(data) {
+                    println!("{}", id);
+                }
             }
         }
     } else if raw {
@@ -114,6 +131,24 @@ mod tests {
                 .filter_map(|item| extract_id(item))
                 .collect();
             assert_eq!(ids, vec!["dev_1", "dev_2", "dev_3"]);
+        }
+    }
+
+    #[test]
+    fn test_extract_id_from_nested_array() {
+        let data = json!({
+            "devices": [
+                {"device_id": "dev_1", "name": "Device 1"},
+                {"device_id": "dev_2", "name": "Device 2"}
+            ]
+        });
+        // Verify nested array exists
+        assert!(data.get("devices").and_then(|v| v.as_array()).is_some());
+        if let Some(arr) = data.get("devices").and_then(|v| v.as_array()) {
+            let ids: Vec<String> = arr.iter()
+                .filter_map(|item| extract_id(item))
+                .collect();
+            assert_eq!(ids, vec!["dev_1", "dev_2"]);
         }
     }
 }
