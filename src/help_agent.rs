@@ -250,12 +250,12 @@ Create a new access code for a device.
 
 **Parameters:**
 - `--device-id` (required): The lock to add code to
-- `--code` (required): The PIN/code value
+- `--code` (required for regular, omit for offline): The PIN/code value (regular codes only, don't use with --offline)
 - `--name` (optional): Human-readable name for this code
-- `--starts-at` (optional): ISO8601 start time (e.g. 2024-01-15T09:00:00Z) - code inactive before this
-- `--ends-at` (optional): ISO8601 end time (e.g. 2024-01-15T17:00:00Z) - code inactive after this
-- `--offline` (flag): Code works without internet connectivity (syncs to device storage)
-- `--one-time` (flag): Code can only be used once, then auto-invalidates
+- `--starts-at` (optional): ISO8601 start time (e.g. 2024-01-15T09:00:00Z)
+- `--ends-at` (optional): ISO8601 end time (e.g. 2024-01-15T17:00:00Z)
+- `--offline` (flag): Server generates algorithmic offline code (igloohome, dormakaba, Lockly only). Don't provide --code.
+- `--one-time` (flag, offline only): Code expires after first use. Only works with --offline.
 
 **Output:** Created access code object with ID and metadata
 
@@ -299,27 +299,32 @@ rseam access-codes create \
   --starts-at "2024-02-16T17:00:00-08:00" \
   --ends-at "2024-02-18T23:59:59-08:00"
 
-# Create offline code (works without internet)
+# Create offline code (server generates - no --code needed)
 rseam access-codes create \
   --device-id "dev_123" \
-  --code "1111" \
   --name "Backup Code" \
   --offline
+# Output: ✓ Offline code generated: aX9mK2pQ...
+#         (Works offline without internet)
 
-# Create one-time use code (delivery/event)
+# Create one-time offline code (expires after first use)
 rseam access-codes create \
   --device-id "dev_123" \
-  --code "2222" \
   --name "Delivery" \
-  --one-time
-
-# Create offline one-time code (critical backup)
-rseam access-codes create \
-  --device-id "dev_123" \
-  --code "3333" \
-  --name "Emergency Backup" \
   --offline \
   --one-time
+# Output: ✓ Offline code generated: bY7nL3qR...
+#         (One-time use - expires after first use)
+
+# Create time-bound offline code (e.g., business hours only)
+rseam access-codes create \
+  --device-id "dev_123" \
+  --name "Contractor Access" \
+  --offline \
+  --starts-at "2026-03-16T09:00:00-08:00" \
+  --ends-at "2026-03-16T17:00:00-08:00"
+# Output: ✓ Offline code generated: cZ8oM4sT...
+#         (Works offline without internet)
 
 # Create code and capture ID
 CODE_ID=$(rseam access-codes create \
@@ -330,14 +335,10 @@ CODE_ID=$(rseam access-codes create \
 ```
 
 **Use Cases:**
-- Add guest access
-- Create temporary contractor codes (auto-deactivates)
-- Time-limited event access
-- Business-hours-only employee codes
-- Single-day delivery/service access
-- Offline backup access (works without cloud/internet)
-- One-time delivery/event codes (auto-invalidates after use)
-- Critical emergency codes (offline + one-time combined)
+- Regular codes: Guest access, time-limited contractor codes, scheduled access
+- Offline codes: Backup access when internet fails, remote properties (igloohome/dormakaba/Lockly)
+- One-time offline: Single-use emergency codes that work offline
+- Time-bound offline: Contractor access during specific windows, offline-first
 
 ---
 

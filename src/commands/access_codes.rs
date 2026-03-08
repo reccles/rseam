@@ -47,7 +47,7 @@ pub async fn execute(
 async fn create(
     client: &SeamClient,
     device_id: String,
-    code: String,
+    code: Option<String>,
     name: Option<String>,
     starts_at: Option<String>,
     ends_at: Option<String>,
@@ -56,10 +56,34 @@ async fn create(
     id_only: bool,
     raw: bool,
 ) -> SeamResult<()> {
+    // Validation: regular codes require --code, offline codes don't accept it
+    if offline && code.is_some() {
+        return Err(crate::error::SeamError::ApiError(
+            "Cannot provide --code with --offline. Server generates algorithmic offline codes.".to_string()
+        ));
+    }
+
+    if !offline && code.is_none() {
+        return Err(crate::error::SeamError::MissingParameter(
+            "--code is required for regular access codes. Use --offline for server-generated codes.".to_string()
+        ));
+    }
+
+    // one_time is only valid for offline codes
+    if one_time && !offline {
+        return Err(crate::error::SeamError::ApiError(
+            "--one-time is only supported for offline codes (use --offline).".to_string()
+        ));
+    }
+
     let mut params = json!({
         "device_id": device_id,
-        "code": code,
     });
+
+    // Only add code for regular (non-offline) codes
+    if let Some(c) = code {
+        params["code"] = c.into();
+    }
 
     if let Some(n) = name {
         params["name"] = n.into();
@@ -82,6 +106,24 @@ async fn create(
     }
 
     let response = client.post("/access_codes/create", params).await?;
+    
+    // For offline codes, extract and display the generated code
+    if offline {
+        if let Some(access_code) = response.get("access_code") {
+            if let Some(generated_code) = access_code.get("code").and_then(|v| v.as_str()) {
+                eprintln!("
+✓ Offline code generated: {}", generated_code);
+                if one_time {
+                    eprintln!("  (One-time use - expires after first use)
+");
+                } else {
+                    eprintln!("  (Works offline without internet)
+");
+                }
+            }
+        }
+    }
+    
     print_output(&response, id_only, raw);
     Ok(())
 }

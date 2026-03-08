@@ -99,8 +99,9 @@ pub enum AccessCodeCommands {
         #[arg(long)]
         device_id: String,
 
+        /// PIN/code value (omit for offline codes - server generates algorithmic code)
         #[arg(long)]
-        code: String,
+        code: Option<String>,
 
         #[arg(long)]
         name: Option<String>,
@@ -113,11 +114,11 @@ pub enum AccessCodeCommands {
         #[arg(long)]
         ends_at: Option<String>,
 
-        /// Code works offline without internet connectivity
+        /// Code works offline without internet (server generates code). Device-specific (igloohome, dormakaba, Lockly)
         #[arg(long)]
         offline: bool,
 
-        /// Code can only be used once, then auto-invalidates
+        /// One-time-use code (offline only). Expires after first use.
         #[arg(long)]
         one_time: bool,
     },
@@ -433,7 +434,7 @@ mod tests {
             Some(Commands::AccessCodes { command }) => {
                 assert_eq!(command, AccessCodeCommands::Create {
                     device_id: "dev_123".to_string(),
-                    code: "1234".to_string(),
+                    code: Some("1234".to_string()),
                     name: Some("Guest".to_string()),
                     starts_at: None,
                     ends_at: None,
