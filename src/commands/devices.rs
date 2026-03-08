@@ -11,8 +11,8 @@ pub async fn execute(
     raw: bool,
 ) -> SeamResult<()> {
     match command {
-        DeviceCommands::List { device_id, name } => {
-            list_devices(client, device_id, name, id_only, raw).await
+        DeviceCommands::List { name } => {
+            list_devices(client, name, id_only, raw).await
         }
         DeviceCommands::Get { device_id, name } => {
             get_device(client, device_id, name, id_only, raw).await
@@ -28,16 +28,11 @@ pub async fn execute(
 
 async fn list_devices(
     client: &SeamClient,
-    device_id: Option<String>,
     name: Option<String>,
     id_only: bool,
     raw: bool,
 ) -> SeamResult<()> {
     let mut params = json!({});
-
-    if let Some(id) = device_id {
-        params["device_id"] = id.into();
-    }
 
     if let Some(n) = name {
         params["name"] = n.into();

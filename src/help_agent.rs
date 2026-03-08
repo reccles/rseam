@@ -22,8 +22,7 @@ List all devices in the workspace.
 **Purpose:** Retrieve all connected devices.
 
 **Parameters:**
-- `--device-id` (optional): Filter by specific device ID
-- `--name` (optional): Filter by device name
+- `--name` (optional): Filter by device name (case-insensitive)
 
 **Output:** Array of device objects with ID, name, device_type, properties, etc.
 

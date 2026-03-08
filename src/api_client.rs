@@ -62,7 +62,10 @@ impl SeamClient {
         if status.is_success() {
             serde_json::from_str(&text).map_err(SeamError::SerdeError)
         } else {
-            Err(SeamError::ApiError(format!("[{}] {}", status.as_u16(), text)))
+            // Try to parse error JSON for user-friendly message
+            let error_msg = parse_error_response(&text)
+                .unwrap_or_else(|| text.clone());
+            Err(SeamError::ApiError(format!("[{}] {}", status.as_u16(), error_msg)))
         }
     }
 
@@ -81,6 +84,25 @@ impl SeamClient {
             "***".to_string()
         }
     }
+}
+
+/// Parse Seam API error response and extract user-friendly message
+fn parse_error_response(text: &str) -> Option<String> {
+    // Try to parse as JSON
+    let json: serde_json::Value = serde_json::from_str(text).ok()?;
+    
+    // Extract error.type and error.message
+    let error_type = json.get("error")
+        .and_then(|e| e.get("type"))
+        .and_then(|t| t.as_str())
+        .unwrap_or("unknown_error");
+    
+    let error_message = json.get("error")
+        .and_then(|e| e.get("message"))
+        .and_then(|m| m.as_str())
+        .unwrap_or("No error message provided");
+    
+    Some(format!("{} - {}", error_type, error_message))
 }
 
 #[cfg(test)]

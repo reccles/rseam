@@ -64,9 +64,6 @@ pub enum DeviceCommands {
     /// List all devices
     List {
         #[arg(long)]
-        device_id: Option<String>,
-
-        #[arg(long)]
         name: Option<String>,
     },
 
@@ -285,7 +282,7 @@ mod tests {
         let cli = Cli::parse_from(["rseam", "devices", "list"]);
         match cli.command {
             Some(Commands::Devices { command }) => {
-                assert_eq!(command, DeviceCommands::List { device_id: None, name: None });
+                assert_eq!(command, DeviceCommands::List { name: None });
             }
             _ => panic!("Expected Devices command"),
         }
