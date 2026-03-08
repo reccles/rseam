@@ -310,7 +310,7 @@ List all access codes for a device.
 **Purpose:** Show all codes that work on a specific lock.
 
 **Parameters:**
-- `--device-id` (optional): Filter codes for specific device
+- `--device-id` (required): The lock to list codes for
 
 **Output:** Array of access code objects
 

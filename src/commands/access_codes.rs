@@ -83,15 +83,13 @@ async fn get(
 
 async fn list(
     client: &SeamClient,
-    device_id: Option<String>,
+    device_id: String,
     id_only: bool,
     raw: bool,
 ) -> SeamResult<()> {
-    let mut params = json!({});
-
-    if let Some(id) = device_id {
-        params["device_id"] = id.into();
-    }
+    let params = json!({
+        "device_id": device_id,
+    });
 
     let response = client.post("/access_codes/list", params).await?;
     print_output(&response, id_only, raw);

@@ -115,7 +115,7 @@ pub enum AccessCodeCommands {
     /// List access codes
     List {
         #[arg(long)]
-        device_id: Option<String>,
+        device_id: String,
     },
 
     /// Update an access code
