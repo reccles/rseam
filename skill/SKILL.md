@@ -42,7 +42,7 @@ The CLI reads `SEAM_API_KEY` from environment. All commands fail without it.
 | `rseam locks unlock-door --device-id ID` | Unlock a door |
 | `rseam locks lock-door --device-id ID` | Lock a door |
 | `rseam access-codes create --device-id ID --code PIN` | Create access code |
-| `rseam access-codes list --device-id ID` | List codes on a lock |
+| `rseam access-codes list --device-id ID` | List codes on a lock (device-id required) |
 | `rseam access-codes delete --access-code-id ID` | Revoke access code |
 | `rseam health get-health` | Check API connectivity |
 
@@ -162,7 +162,7 @@ Auto-generate a unique PIN.
 - `--name` (optional)
 
 ### `access-codes list`
-List codes. Optional: `--device-id` filter
+List codes. Params: `--device-id` (required)
 
 ### `access-codes get`
 Get code details. Params: `--access-code-id` (required)
