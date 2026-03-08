@@ -254,8 +254,8 @@ Create a new access code for a device.
 - `--name` (optional): Human-readable name for this code
 - `--starts-at` (optional): ISO8601 start time (e.g. 2024-01-15T09:00:00Z)
 - `--ends-at` (optional): ISO8601 end time (e.g. 2024-01-15T17:00:00Z)
-- `--offline` (flag): Server generates algorithmic offline code (igloohome, dormakaba, Lockly only). Don't provide --code. Requires --starts-at and --ends-at unless using --one-time.
-- `--one-time` (flag, offline only): Code expires after first use. Only works with --offline. Allows skipping time bounds.
+- `--offline` (flag): Server generates algorithmic offline code (igloohome, dormakaba, Lockly only). Don't provide --code. ALWAYS requires --starts-at and --ends-at.
+- `--one-time` (flag, offline only): Code expires after first use only. Still requires time bounds (use 24h window for one-time).
 
 **Output:** Created access code object with ID and metadata
 
@@ -309,12 +309,14 @@ rseam access-codes create \
 # Output: ✓ Offline code generated: aX9mK2pQ...
 #         (Works offline without internet)
 
-# Create one-time offline code (expires after first use)
+# Create one-time offline code (24h window, expires after first use)
 rseam access-codes create \
   --device-id "dev_123" \
   --name "Delivery" \
   --offline \
-  --one-time
+  --one-time \
+  --starts-at "2026-03-16T09:00:00-08:00" \
+  --ends-at "2026-03-17T09:00:00-08:00"
 # Output: ✓ Offline code generated: bY7nL3qR...
 #         (One-time use - expires after first use)
 

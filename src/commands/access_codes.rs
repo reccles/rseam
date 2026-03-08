@@ -76,11 +76,11 @@ async fn create(
         ));
     }
 
-    // Offline codes require time bounds UNLESS they're one-time
-    if offline && !one_time {
+    // ALL offline codes require time bounds (even one-time ones)
+    if offline {
         if starts_at.is_none() || ends_at.is_none() {
             return Err(crate::error::SeamError::MissingParameter(
-                "Offline codes require both --starts-at and --ends-at (unless using --one-time). Example: --offline --starts-at 2026-03-16T09:00:00-08:00 --ends-at 2026-03-16T17:00:00-08:00".to_string()
+                "Offline codes require both --starts-at and --ends-at. For one-time codes, set a 24h window. Example: --offline --starts-at 2026-03-16T09:00:00-08:00 --ends-at 2026-03-17T09:00:00-08:00".to_string()
             ));
         }
     }
